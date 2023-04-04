@@ -1,0 +1,25 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Index of {dir_path}</title>
+</head>
+<body>
+    <h1>Index of {dir_path}</h1>
+    <ul id="fileList"></ul>
+    
+    <script>
+        // Fetch the list of files from the server
+        fetch('/files')
+            .then(response => response.json())
+            .then(files => {
+                // Generate a list of HTML links for the files
+                const links = files.map(file => `<li><a href="${file}">${file}</a></li>`);
+                
+                // Insert the links into the HTML content
+                const fileList = document.getElementById('fileList');
+                fileList.innerHTML = links.join('');
+            })
+            .catch(error => console.error(error));
+    </script>
+</body>
+</html>

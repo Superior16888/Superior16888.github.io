@@ -1,38 +1,43 @@
 <!DOCTYPE html>
 <html>
 <head>
-	<title>File List</title>
+	<title>List of HTML Files</title>
 </head>
 <body>
-	<h1>List of Files</h1>
-	<ul id="fileList"></ul>
-	<script>
-		// get the current directory path
-		const path = window.location.pathname.substring(0, window.location.pathname.lastIndexOf('/') + 1);
+	<h1>List of HTML Files</h1>
+	<ul id="fileList">
+		<!-- JavaScript will insert file links here -->
+	</ul>
 
-		// make a request to get the list of files in the directory
-		const request = new XMLHttpRequest();
-		request.open('GET', path, true);
-		request.onload = function() {
-			// parse the HTML response and get all the links to files
-			const parser = new DOMParser();
-			const htmlDoc = parser.parseFromString(request.responseText, 'text/html');
-			const links = htmlDoc.getElementsByTagName('a');
-			for (let i = 0; i < links.length; i++) {
-				const link = links[i];
-				const href = link.getAttribute('href');
-				if (href.endsWith('.html')) {
-					// create a new list item and link for each HTML file found
-					const li = document.createElement('li');
-					const a = document.createElement('a');
-					a.setAttribute('href', href);
-					a.textContent = href;
-					li.appendChild(a);
-					document.getElementById('fileList').appendChild(li);
+	<script>
+		// Get current directory URL
+		var currentDir = window.location.href.substring(0, window.location.href.lastIndexOf('/') + 1);
+
+		// Make request to server for list of files
+		var xhr = new XMLHttpRequest();
+		xhr.open('GET', currentDir, true);
+		xhr.onload = function() {
+			if (xhr.status === 200) {
+				// Parse the response and find all files with .html extension
+				var files = xhr.responseText.split('\n');
+				for (var i = 0; i < files.length; i++) {
+					if (files[i].endsWith('.html')) {
+						// Create link to file
+						var link = document.createElement('a');
+						link.href = currentDir + files[i];
+						link.innerHTML = files[i];
+
+						// Create list item and add link to it
+						var listItem = document.createElement('li');
+						listItem.appendChild(link);
+
+						// Add list item to unordered list
+						document.getElementById('fileList').appendChild(listItem);
+					}
 				}
 			}
-		}
-		request.send();
+		};
+		xhr.send();
 	</script>
 </body>
 </html>

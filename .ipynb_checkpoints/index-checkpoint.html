@@ -1,43 +1,39 @@
 <!DOCTYPE html>
 <html>
 <head>
-	<title>List of HTML Files</title>
-</head>
-<body>
-	<h1>List of HTML Files</h1>
-	<ul id="fileList">
-		<!-- JavaScript will insert file links here -->
-	</ul>
-
+	<title>File List</title>
 	<script>
-		// Get current directory URL
-		var currentDir = window.location.href.substring(0, window.location.href.lastIndexOf('/') + 1);
-
-		// Make request to server for list of files
-		var xhr = new XMLHttpRequest();
-		xhr.open('GET', currentDir, true);
-		xhr.onload = function() {
-			if (xhr.status === 200) {
-				// Parse the response and find all files with .html extension
-				var files = xhr.responseText.split('\n');
-				for (var i = 0; i < files.length; i++) {
-					if (files[i].endsWith('.html')) {
-						// Create link to file
-						var link = document.createElement('a');
-						link.href = currentDir + files[i];
-						link.innerHTML = files[i];
-
-						// Create list item and add link to it
-						var listItem = document.createElement('li');
-						listItem.appendChild(link);
-
-						// Add list item to unordered list
-						document.getElementById('fileList').appendChild(listItem);
+		function getFileList() {
+			var files = document.getElementById("files");
+			var xhr = new XMLHttpRequest();
+			xhr.onreadystatechange = function() {
+				if (xhr.readyState === 4) {
+					// Check if the request was successful
+					if (xhr.status === 200) {
+						// Parse the response text as JSON
+						var fileList = JSON.parse(xhr.responseText);
+						// Loop through the list of files and add a link to each one
+						for (var i = 0; i < fileList.length; i++) {
+							var file = fileList[i];
+							var link = document.createElement("a");
+							link.href = file;
+							link.innerHTML = file;
+							files.appendChild(link);
+							files.appendChild(document.createElement("br"));
+						}
+					} else {
+						console.log("Error loading file list");
 					}
 				}
-			}
-		};
-		xhr.send();
+			};
+			// Make sure the path is correct relative to the index.html file
+			xhr.open("GET", "./");
+			xhr.send();
+		}
 	</script>
+</head>
+<body onload="getFileList()">
+	<h1>File List</h1>
+	<div id="files"></div>
 </body>
 </html>
